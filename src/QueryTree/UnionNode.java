@@ -1,0 +1,29 @@
+package QueryTree;
+
+public class UnionNode extends TreeNode {
+
+	@Override
+	public String getNodeType() {
+		// TODO Auto-generated method stub
+		return "UNION";
+	}
+
+	@Override
+	public boolean isLeaf() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void accept(TreeNodeVisitor visitor) {
+		// TODO Auto-generated method stub
+		visitor.visit(this);
+	}
+
+	@Override
+	public String getContent() {
+		// TODO Auto-generated method stub
+		return "UNION";
+	}
+
+}
