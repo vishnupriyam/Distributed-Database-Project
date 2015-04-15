@@ -6,6 +6,7 @@ import java.util.List;
 public class SelectionNode extends TreeNode {
 	private String tableName;
 	private List<SimpleExpression> condList;
+	
 	@Override
 	public String getNodeType() {
 		// TODO Auto-generated method stub
