@@ -213,7 +213,7 @@ public class QueryTree {
 		node.setNodeID(-1);
 		for (int i = 0; i < selectItemsList.size(); i++) {
 			attributes += selectItemsList.get(i) + 
-							(i < selectItemsList.size()?",":"");
+							(i < selectItemsList.size() - 1?",":"");
 			int pos = selectItemsList.get(i).indexOf(".");
 			if(pos == -1){
 				node.addTableName(null);
@@ -232,6 +232,8 @@ public class QueryTree {
 		this.nodeID++;	
 		root = node;
 		
+		//System.out.println(attributes);
+		
 		/***** from clause *****/
 		ArrayList<LeafNode> leaves = new ArrayList<LeafNode>();
 		TableNamesFinder tableNamesFinder = new TableNamesFinder();
@@ -246,6 +248,13 @@ public class QueryTree {
 			leaves.add(leafNode);
 		}
 		
+		/*
+		for (int i = 0; i < leaves.size(); i++) {
+			System.out.print(leaves.get(i).getTableName()+" ");
+		}
+		System.out.println();
+		*/
+		
 		/***** where tree *****/
 		 WhereClauseDecomposition wc = new WhereClauseDecomposition(select);
 	     WhereNode wn = wc.getWhereTree().toCNF(wc.getWhereTree().getRoot());
@@ -254,7 +263,33 @@ public class QueryTree {
 	     wt.collectJoins(wt.getRoot());
 	     ArrayList<JoinExpression> joinList = wt.getJeList();
 	     ArrayList<SimpleExpression> selectionList = wt.getSeList();
-	     
+	    
+	     /*
+	     System.out.println("\n***** Join List *****\n");
+	    for (int i = 0; i < joinList.size(); i++) {
+			System.out.println(joinList.get(i).leftTableName
+								+"."
+								+joinList.get(i).leftColumn
+								+" = "
+								+joinList.get(i).rightTableName
+								+"."
+								+joinList.get(i).rightColumn);
+		}
+	    
+	    System.out.println("\n***** Selection List *****\n");
+	    
+	    for (int i = 0; i < selectionList.size(); i++) {
+			System.out.println(selectionList.get(i).tableName
+								+"."
+								+selectionList.get(i).columnName
+								+selectionList.get(i).op
+								+selectionList.get(i).value 
+								+"\t" 
+								+ selectionList.get(i).valType 
+								+ " "
+								+ selectionList.get(i).valueType);
+		}
+		*/
 	     /*------where clause----*/
 			
 		WhereItemsFinder finder3 = new WhereItemsFinder(select); //COMPLETE WHERE ITWEMS FINDER

@@ -62,8 +62,8 @@ public class WhereClauseDecomposition implements SelectVisitor,ExpressionVisitor
 	public WhereClauseDecomposition(Select select){
 	
 		select.getSelectBody().accept(this);
-		System.out.println("---where tree----");
-		whereTree.displayTree();
+		//System.out.println("---where tree----");
+		//whereTree.displayTree();
 	}
 
 	public WhereClauseDecomposition(String sql){

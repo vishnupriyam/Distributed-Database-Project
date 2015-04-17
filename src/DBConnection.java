@@ -61,7 +61,7 @@ public class DBConnection {
 		}*/
 		
 		CCJSqlParserManager pm = new CCJSqlParserManager();
-		  String sql = "SELECT Book.name,Publisher.name FROM Publisher,Book WHERE Publisher.publisherId = Book.Publisher_publisherId" ;
+		  String sql = "SELECT Book.name,Publisher.name FROM Publisher,Book WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10" ;
 		  net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
 		  /* 
 		  now you should use a class that implements StatementVisitor to decide what to do
@@ -85,9 +85,9 @@ public class DBConnection {
 			ArrayList<JoinExpression> joinList = finder3.getJoinList();
 			for(int i=0;i<joinList.size();++i){
 				JoinNode node2 = new JoinNode();
-				System.out.println(joinList.get(i).leftTableName);
+				//System.out.println(joinList.get(i).leftTableName);
 				node2.setRightTableName(joinList.get(i).rightTableName);
-				System.out.println(joinList.get(i).rightTableName);
+				//System.out.println(joinList.get(i).rightTableName);
 				
 				node2.addAttribute(joinList.get(i).leftColumn, joinList.get(i).rightColumn);
 				;

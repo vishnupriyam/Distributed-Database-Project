@@ -106,7 +106,7 @@ public class WhereTree {
 					se.setValType(vnode.getValueType());
 					se.value = vnode.getValue();
 				}
-				
+				seList.add(se);
 			}
 		}
 		else{
