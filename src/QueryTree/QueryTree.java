@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import GlobalDefinition.Constant;
+import GlobalDefinition.JoinExpression;
+import GlobalDefinition.SimpleExpression;
 import Parser.SelectItemsFinder;
 import Parser.TableNamesFinder;
+import Parser.WhereClauseDecomposition;
+import Parser.WhereItemsFinder;
+import WhereTree.WhereNode;
+import WhereTree.WhereTree;
 
 import net.sf.jsqlparser.statement.select.Select;
 
@@ -59,7 +65,7 @@ public class QueryTree {
 		// TODO Auto-generated method stub
 		System.out.print("level = " + level +" child = " + childNumber + ": " );
 		System.out.print(thisNode.getContent());
-		System.out.println("siteID = " + thisNode.getSiteID() + "nodeID = " + thisNode.getNodeID());
+		System.out.println(" siteID = " + thisNode.getSiteID() + " nodeID = " + thisNode.getNodeID());
 		int childCount = thisNode.getChildCount();
 		for (int i = 0; i < childCount; i++) {
 			TreeNode nextNode = thisNode.getChildList().get(i);
@@ -130,7 +136,6 @@ public class QueryTree {
 	}
 
 	private void getLeafNodeList(TreeNode node) {
-		// TODO Auto-generated method stub
 		if(node.isLeaf()){
 			leafNodeList.add((LeafNode)node);
 			return;
@@ -242,6 +247,68 @@ public class QueryTree {
 		}
 		
 		/***** where tree *****/
+		 WhereClauseDecomposition wc = new WhereClauseDecomposition(select);
+	     WhereNode wn = wc.getWhereTree().toCNF(wc.getWhereTree().getRoot());
+	     WhereTree wt = new WhereTree();
+	     wt.setRoot(wn);
+	     wt.collectJoins(wt.getRoot());
+	     ArrayList<JoinExpression> joinList = wt.getJeList();
+	     ArrayList<SimpleExpression> selectionList = wt.getSeList();
+	     
+	     /*------where clause----*/
+			
+		WhereItemsFinder finder3 = new WhereItemsFinder(select); //COMPLETE WHERE ITWEMS FINDER
+		/*------join clause----*/
+		ArrayList<JoinNode> joins = new ArrayList<JoinNode>();
+		//ArrayList<JoinExpression> joinList = finder3.getJionList();
+		for(int i=0;i<joinList.size();++i){
+			JoinNode node2 = new JoinNode();
+			node2.setLeftTableName(joinList.get(i).leftTableName);
+			node2.setRightTableName(joinList.get(i).rightTableName);
+			node2.addAttribute(joinList.get(i).leftColumn, joinList.get(i).rightColumn);
+			node2.setNodeName("Join");
+			node2.setNodeID(this.nodeID);
+			this.nodeID++;
+			joins.add(node2);
+				
+		}
 		
+		/*-------selection clause-------*/	
+
+		ArrayList<SelectionNode> selections = new ArrayList<SelectionNode>();
+		//ArrayList<SimpleExpression> selectionList = finder3.getSelectionList();
+		for(int i=0;i<selectionList.size();++i){
+			SelectionNode node3 = new SelectionNode();
+			node3.setNodeName("SELECTION");
+			node3.addCondition(selectionList.get(i));
+			node3.setNodeID(this.nodeID);
+			node3.setTableName(selectionList.get(i).tableName);
+			this.nodeID++;
+			selections.add(node3);
+		}
+		
+		for(int i=0;i<joins.size();++i){
+			JoinNode jnode = joins.get(i);
+			TreeNode leftChild = findLeafNode(jnode.getLeftTableName(),leaves);
+			TreeNode rightChild = findLeafNode(jnode.getRightTableName(),leaves);
+			while(leftChild.getParentNode()!= null) leftChild = leftChild.getParentNode();
+			while(rightChild.getParentNode()!=null) rightChild = rightChild.getParentNode();
+			leftChild.setParentNode(jnode);
+			rightChild.setParentNode(jnode);
+		}
+		
+		for(int i=0;i<selections.size();++i){
+			SelectionNode snode = selections.get(i);
+			TreeNode child = findLeafNode(snode.getTableName(), leaves);
+			while (child.getParentNode()!=null) child = child.getParentNode();
+			child.setParentNode(snode);
+		}
+		
+		TreeNode leaf1 = leaves.get(0);
+		while(leaf1.getParentNode()!= null) leaf1 = leaf1.getParentNode();
+		leaf1.setParentNode(root);
+		
+		
+	     
 	}
 }

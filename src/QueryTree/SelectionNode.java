@@ -3,6 +3,8 @@ package QueryTree;
 import java.util.ArrayList;
 import java.util.List;
 
+import GlobalDefinition.SimpleExpression;
+
 public class SelectionNode extends TreeNode {
 	private String tableName;
 	private List<SimpleExpression> condList;
@@ -39,6 +41,7 @@ public class SelectionNode extends TreeNode {
 				content += " and ";
 			}
 		}
+		return content;
 	}
 
 	public String getTableName() {

@@ -69,6 +69,18 @@ public class AttrNode implements WhereNode {
 		return null;
 	}
 
+	public String getAttrName() {
+		return attrName;
+	}
+	public void setAttrName(String attrName) {
+		this.attrName = attrName;
+	}
+	public String getTableName() {
+		return tableName;
+	}
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
 	@Override
 	public void setNodeName(String name) {
 		// TODO Auto-generated method stub

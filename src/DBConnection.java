@@ -1,9 +1,20 @@
+import java.io.StringReader;
 import java.sql.Connection;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
+import GlobalDefinition.JoinExpression;
+import Parser.WhereItemsFinder;
+import QueryTree.JoinNode;
+import QueryTree.QueryTree;
+
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.statement.select.Select;
 
 
 public class DBConnection {
@@ -28,13 +39,14 @@ public class DBConnection {
 	
 	/**
 	 * @param args
+	 * @throws JSQLParserException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws JSQLParserException {
 		// TODO Auto-generated method stub
 		Statement stmt;
 		ResultSet rs;
-		Connection conn1 = DBConnection.connectDB("jdbc:mysql://192.168.40.140:3306/","QUIZ","root","");
-		try {
+		Connection conn1 = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject","root","");
+		/*try {
 			stmt = conn1.createStatement();
 			rs = stmt.executeQuery("SELECT * FROM faculty_master");
 			while(rs.next()){
@@ -46,7 +58,43 @@ public class DBConnection {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		
+		CCJSqlParserManager pm = new CCJSqlParserManager();
+		  String sql = "SELECT Book.name,Publisher.name FROM Publisher,Book WHERE Publisher.publisherId = Book.Publisher_publisherId" ;
+		  net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+		  /* 
+		  now you should use a class that implements StatementVisitor to decide what to do
+		  based on the kind of the statement, that is SELECT or INSERT etc. but here we are only
+		  interested in SELECTS
+		  */
+		  if (statement instanceof Select) {
+		  	Select selectStatement = (Select) statement;
+		  	
+		  	QueryTree queryTree = new QueryTree();
+		  	queryTree.genSelectTree(selectStatement);
+		  	queryTree.generateTreeList();
+		  	queryTree.displayTree();
+		  	
+		  	/*------where clause----*/
+		  	
+			WhereItemsFinder finder3 = new WhereItemsFinder(selectStatement);
+			
+			/*------join clause----*/
+			ArrayList<JoinNode> joins = new ArrayList<JoinNode>();
+			ArrayList<JoinExpression> joinList = finder3.getJionList();
+			for(int i=0;i<joinList.size();++i){
+				JoinNode node2 = new JoinNode();
+				System.out.println(joinList.get(i).leftTableName);
+				node2.setRightTableName(joinList.get(i).rightTableName);
+				System.out.println(joinList.get(i).rightTableName);
+				
+				node2.addAttribute(joinList.get(i).leftColumn, joinList.get(i).rightColumn);
+				;
+				
+			}
+			
+		  }
 		
 		
 	} 
