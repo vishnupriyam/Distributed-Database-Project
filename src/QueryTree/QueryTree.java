@@ -295,13 +295,12 @@ public class QueryTree {
 		WhereItemsFinder finder3 = new WhereItemsFinder(select); //COMPLETE WHERE ITWEMS FINDER
 		/*------join clause----*/
 		ArrayList<JoinNode> joins = new ArrayList<JoinNode>();
-		//ArrayList<JoinExpression> joinList = finder3.getJionList();
 		for(int i=0;i<joinList.size();++i){
 			JoinNode node2 = new JoinNode();
 			node2.setLeftTableName(joinList.get(i).leftTableName);
 			node2.setRightTableName(joinList.get(i).rightTableName);
 			node2.addAttribute(joinList.get(i).leftColumn, joinList.get(i).rightColumn);
-			node2.setNodeName("Join");
+			node2.setNodeName("JOIN");
 			node2.setNodeID(this.nodeID);
 			this.nodeID++;
 			joins.add(node2);
@@ -311,7 +310,6 @@ public class QueryTree {
 		/*-------selection clause-------*/	
 
 		ArrayList<SelectionNode> selections = new ArrayList<SelectionNode>();
-		//ArrayList<SimpleExpression> selectionList = finder3.getSelectionList();
 		for(int i=0;i<selectionList.size();++i){
 			SelectionNode node3 = new SelectionNode();
 			node3.setNodeName("SELECTION");
@@ -340,7 +338,9 @@ public class QueryTree {
 		}
 		
 		TreeNode leaf1 = leaves.get(0);
-		while(leaf1.getParentNode()!= null) leaf1 = leaf1.getParentNode();
+		while(leaf1.getParentNode()!= null) {
+			leaf1 = leaf1.getParentNode();
+		}
 		leaf1.setParentNode(root);
 		
 		

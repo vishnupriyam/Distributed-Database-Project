@@ -20,6 +20,8 @@ public abstract class TreeNode {
 	
 	public void setParentNode(TreeNode parentNode){
 		this.parentNode = parentNode;
+		if(parentNode != null)
+			parentNode.addchild(this);
 	}
 	
 	public TreeNode getParentNode(){
