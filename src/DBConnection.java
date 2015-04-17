@@ -82,7 +82,7 @@ public class DBConnection {
 			
 			/*------join clause----*/
 			ArrayList<JoinNode> joins = new ArrayList<JoinNode>();
-			ArrayList<JoinExpression> joinList = finder3.getJionList();
+			ArrayList<JoinExpression> joinList = finder3.getJoinList();
 			for(int i=0;i<joinList.size();++i){
 				JoinNode node2 = new JoinNode();
 				System.out.println(joinList.get(i).leftTableName);

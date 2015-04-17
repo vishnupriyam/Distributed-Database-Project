@@ -108,7 +108,7 @@ public class WhereItemsFinder implements SelectVisitor, ExpressionVisitor {
 		}
 	}
 
-	public ArrayList<JoinExpression> getJionList(){
+	public ArrayList<JoinExpression> getJoinList(){
 		return joinList;
 	}
 	public ArrayList<SimpleExpression> getSelectionList(){
