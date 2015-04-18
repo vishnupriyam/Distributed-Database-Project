@@ -201,7 +201,7 @@ public class DBConnection {
 									    java.sql.PreparedStatement s2 = connection[0].prepareStatement(query2);
 									    
 									    while (rs.next()) {
-									        for (int j = 1; j < meta.getColumnCount(); j++)
+									        for (int j = 1; j <= meta.getColumnCount(); j++)
 									            s2.setObject(j, rs.getObject(j));
 
 									        s2.addBatch();
