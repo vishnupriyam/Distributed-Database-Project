@@ -69,8 +69,8 @@ public class DBConnection {
 	 */
 	public static void main(String[] args) throws JSQLParserException, SQLException {
 		// TODO Auto-generated method stub
-		Statement stmt;
-		ResultSet rs;
+		Statement stmt,stmt1;
+		ResultSet resultSet,resultSet2;
 		Connection connection[] = new Connection[4];
 		connection[0] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject","root","");
 		connection[1] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject1","root","");
@@ -92,7 +92,7 @@ public class DBConnection {
 		}*/
 		
 		CCJSqlParserManager pm = new CCJSqlParserManager();
-		  String sql = "SELECT Book.name,Publisher.name,Customer.name,Orders.quantity FROM Publisher,Book,Customer,Orders WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10 AND Customer.customerId = Orders.Customer_customerId AND Orders.Book_bookId = Book.bookId AND Book.bookId = 12";
+		  String sql = "SELECT Book.name,Publisher.name,Customer.name,Orders.quantity FROM Publisher,Book,Customer,Orders WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10 AND Customer.customerId = Orders.Customer_customerId AND Orders.Book_bookId = Book.bookId AND Book.bookId = 12 AND Customer.rank >= 2";
 		  Select statement = (Select) pm.parse(new StringReader(sql));
 		  /* 
 		  now you should use a class that implements StatementVisitor to decide what to do
@@ -136,24 +136,31 @@ public class DBConnection {
 				check.displayConditionList();
 				
 				stmt = connection[0].createStatement();
-				rs = stmt.executeQuery(
+				resultSet = stmt.executeQuery(
 						select + space + siteID + comma + attributeName + comma + startValue + comma + endValue + space +
 						from + space + horizontalFragmentTable + space +
 						where + space + tableName + space + equals + space + "\"" + leaves.get(i).getTableName() + "\"" + ";"
 						);
 				
 				ArrayList<Integer> sites = new ArrayList<Integer>();
-				while(rs.next()){
-					String id = rs.getString(siteID);
-					String attrName = rs.getString(attributeName);
-					int start = rs.getInt(startValue);
-					int end = rs.getInt(endValue);
+				while(resultSet.next()){
+					String id = resultSet.getString(siteID);
+					String attrName = resultSet.getString(attributeName);
+					int start = resultSet.getInt(startValue);
+					int end = resultSet.getInt(endValue);
 					System.out.println("ID : " + id + comma + space + 
 										attributeName + ": " + attrName + comma + space + 
 										startValue + ": " + start + comma + space +
 										endValue + ": " + end);
 					if(conditions.contains(attrName)){
-						
+						if(check.isRange(resultSet.getString(attributeName), resultSet.getInt(startValue), resultSet.getInt(endValue))){
+								//System.out.println(rs.getString(siteID));
+								stmt1 = connection[resultSet.getInt(siteID)].createStatement();
+								resultSet2 = stmt1.executeQuery(query);
+						}
+						else{
+								//just ignore case - as no site contains required information
+						}
 					}
 					else{
 						
