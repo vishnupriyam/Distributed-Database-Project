@@ -1,3 +1,4 @@
+import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Connection;
 
@@ -5,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import GlobalDefinition.JoinExpression;
@@ -15,6 +17,8 @@ import QueryTree.QueryTree;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SelectBody;
+import net.sf.jsqlparser.statement.select.SelectVisitor;
 
 
 public class DBConnection {
@@ -64,7 +68,7 @@ public class DBConnection {
 		
 		CCJSqlParserManager pm = new CCJSqlParserManager();
 		  String sql = "SELECT Book.name,Publisher.name,Customer.name,Orders.quantity FROM Publisher,Book,Customer,Orders WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10 AND Customer.customerId = Orders.Customer_customerId AND Orders.Book_bookId = Book.bookId AND Book.bookId = 12";
-		  net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
+		  Select statement = (Select) pm.parse(new StringReader(sql));
 		  /* 
 		  now you should use a class that implements StatementVisitor to decide what to do
 		  based on the kind of the statement, that is SELECT or INSERT etc. but here we are only
@@ -77,6 +81,9 @@ public class DBConnection {
 		  	queryTree.genSelectTree(selectStatement);
 		  	queryTree.generateTreeList();
 		  	queryTree.displayTree();
+		  	
+		  	Select trailQuery;
+		  	
 		  	
 		  	/*------where clause----*/
 		  	
