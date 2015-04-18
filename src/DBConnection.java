@@ -45,7 +45,9 @@ public class DBConnection {
 		// TODO Auto-generated method stub
 		Statement stmt;
 		ResultSet rs;
-		Connection conn1 = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject","root","");
+		Connection conn1 = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject1","root","");
+		Connection conn2 = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject2", "root", "");
+		Connection conn3 = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject3", "root", ""); 
 		/*try {
 			stmt = conn1.createStatement();
 			rs = stmt.executeQuery("SELECT * FROM faculty_master");
@@ -61,7 +63,7 @@ public class DBConnection {
 		}*/
 		
 		CCJSqlParserManager pm = new CCJSqlParserManager();
-		  String sql = "SELECT Book.name,Publisher.name,Customer.name,Orders.quantity FROM Publisher,Book,Customer,Orders WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10 AND Customer.customerId = Orders.Customer_customerId AND Orders.Book_bookId = Book.bookId";
+		  String sql = "SELECT Book.name,Publisher.name,Customer.name,Orders.quantity FROM Publisher,Book,Customer,Orders WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10 AND Customer.customerId = Orders.Customer_customerId AND Orders.Book_bookId = Book.bookId AND Book.bookId = 12";
 		  net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(sql));
 		  /* 
 		  now you should use a class that implements StatementVisitor to decide what to do

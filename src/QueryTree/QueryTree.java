@@ -66,6 +66,8 @@ public class QueryTree {
 		System.out.print("level = " + level +" child = " + childNumber + ": " );
 		System.out.print(thisNode.getContent());
 		System.out.println(" siteID = " + thisNode.getSiteID() + " nodeID = " + thisNode.getNodeID());
+		//if(thisNode.getParentNode() != null)
+			//System.out.println("parent node Id : " + thisNode.getParentNode().getNodeID());
 		int childCount = thisNode.getChildCount();
 		for (int i = 0; i < childCount; i++) {
 			TreeNode nextNode = thisNode.getChildList().get(i);
@@ -320,6 +322,13 @@ public class QueryTree {
 			selections.add(node3);
 		}
 		
+		for(int i=0;i<selections.size();++i){
+			SelectionNode snode = selections.get(i);
+			TreeNode child = findLeafNode(snode.getTableName(), leaves);
+			while (child.getParentNode()!=null) child = child.getParentNode();
+			child.setParentNode(snode);
+		}
+		
 		for(int i=0;i<joins.size();++i){
 			JoinNode jnode = joins.get(i);
 			TreeNode leftChild = findLeafNode(jnode.getLeftTableName(),leaves);
@@ -330,12 +339,7 @@ public class QueryTree {
 			rightChild.setParentNode(jnode);
 		}
 		
-		for(int i=0;i<selections.size();++i){
-			SelectionNode snode = selections.get(i);
-			TreeNode child = findLeafNode(snode.getTableName(), leaves);
-			while (child.getParentNode()!=null) child = child.getParentNode();
-			child.setParentNode(snode);
-		}
+		
 		
 		TreeNode leaf1 = leaves.get(0);
 		while(leaf1.getParentNode()!= null) {
