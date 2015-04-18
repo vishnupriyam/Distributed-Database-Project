@@ -4,11 +4,15 @@ import java.sql.Connection;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.mysql.jdbc.PreparedStatement;
 
 import GlobalDefinition.JoinExpression;
 import Parser.WhereItemsFinder;
@@ -155,8 +159,56 @@ public class DBConnection {
 					if(conditions.contains(attrName)){
 						if(check.isRange(resultSet.getString(attributeName), resultSet.getInt(startValue), resultSet.getInt(endValue))){
 								//System.out.println(rs.getString(siteID));
-								stmt1 = connection[resultSet.getInt(siteID)].createStatement();
-								resultSet2 = stmt1.executeQuery(query);
+								//stmt1 = connection[resultSet.getInt(siteID)].createStatement();
+								//resultSet2 = stmt1.executeQuery(query);
+								try (java.sql.PreparedStatement s1 = connection[resultSet.getInt(siteID)].prepareStatement(query);
+									     ResultSet rs = s1.executeQuery()) {
+									    ResultSetMetaData meta = rs.getMetaData();
+									    
+									    
+									    StringBuilder columnNames = new StringBuilder();
+									    StringBuilder bindVariables = new StringBuilder();
+									    
+									    List<String> columns = new ArrayList<>();
+									    for (int j = 1; j <= meta.getColumnCount(); j++)
+									        columns.add(meta.getColumnName(j));
+
+									    for (String column : columns) {
+									        if (columnNames.length() > 0) {
+									            columnNames.append(", ");
+									            bindVariables.append(", ");
+									        }
+
+									        columnNames.append(column);
+									        bindVariables.append('?');
+									    }
+
+									    String query2 = "INSERT INTO " + leaves.get(i).getTableName() + " ("
+									               + columnNames
+									               + ") VALUES ("
+									               + bindVariables
+									               + ")";
+									    
+									    /*
+									    PreparedStatement s2 = connection[0].prepareStatement(
+									        "INSERT INTO " + leaves.get(i).getTableName() + " ("
+									      + columns.stream().collect(Collectors.joining(", "))
+									      + ") VALUES ("
+									      + columns.stream().map(c -> "?").collect(Collectors.joining(", "))
+									      + ")");
+										*/
+									    
+									    java.sql.PreparedStatement s2 = connection[0].prepareStatement(query2);
+									    
+									    while (rs.next()) {
+									        for (int j = 1; j < meta.getColumnCount(); j++)
+									            s2.setObject(j, rs.getObject(j));
+
+									        s2.addBatch();
+									    }
+
+									    s2.executeBatch();
+									}
 						}
 						else{
 								//just ignore case - as no site contains required information
