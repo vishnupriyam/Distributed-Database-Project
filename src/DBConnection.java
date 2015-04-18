@@ -8,22 +8,44 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import GlobalDefinition.JoinExpression;
 import Parser.WhereItemsFinder;
 import QueryTree.JoinNode;
+import QueryTree.LeafNode;
 import QueryTree.QueryTree;
+import QueryTree.SelectionNode;
+import QueryTree.TreeNode;
 
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectBody;
 import net.sf.jsqlparser.statement.select.SelectVisitor;
+import net.sf.jsqlparser.util.SelectUtils;
 
 
 public class DBConnection {
 
 	private final static String driver = "com.mysql.jdbc.Driver";
+	
+	private final static String select= "SELECT";
+	private final static String space = " ";
+	private final static String from = "FROM";
+	private final static String where = "WHERE";
+	private final static String comma = ",";
+	private final static String and = "AND";
+	private final static String or = "OR";
+	private final static String allAttributes = "*";
+	private final static String horizontalFragmentTable = "HorizontalFragmentation";
+	private final static String tableName = "tableName";
+	private final static String attributeName = "attributeName";
+	private final static String siteID = "siteID";
+	private final static String startValue = "startValue";
+	private final static String endValue = "endValue";
+	private final static String equals = "=";
 	
 	/**
 	 *@param url of the server, database name, user name to access database, password for authentication
@@ -45,13 +67,16 @@ public class DBConnection {
 	 * @param args
 	 * @throws JSQLParserException 
 	 */
-	public static void main(String[] args) throws JSQLParserException {
+	public static void main(String[] args) throws JSQLParserException, SQLException {
 		// TODO Auto-generated method stub
 		Statement stmt;
 		ResultSet rs;
-		Connection conn1 = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject1","root","");
-		Connection conn2 = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject2", "root", "");
-		Connection conn3 = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject3", "root", ""); 
+		Connection connection[] = new Connection[4];
+		connection[0] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject","root","");
+		connection[1] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject1","root","");
+		connection[2] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject2", "root", "");
+		connection[3] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject3", "root", ""); 
+		
 		/*try {
 			stmt = conn1.createStatement();
 			rs = stmt.executeQuery("SELECT * FROM faculty_master");
@@ -82,7 +107,62 @@ public class DBConnection {
 		  	queryTree.generateTreeList();
 		  	queryTree.displayTree();
 		  	
-		  	Select trailQuery;
+		  	List<LeafNode> leaves = queryTree.getLeafNodeList();
+		  	for (int i = 0; i < leaves.size(); i++) {
+		  		String query = new String();
+		  		String conditions = new String();
+		  		ConditionCheck check = new ConditionCheck();
+				TreeNode node = leaves.get(i);
+				query += select + space + allAttributes + space + from + space + ((LeafNode)node).getTableName();
+				node = node.getParentNode();
+				if(!(node.getNodeType().equalsIgnoreCase("join") || node.getNodeType().equalsIgnoreCase("projection"))){
+					query += space + where + space;
+				}
+				while(!(node.getNodeType().equalsIgnoreCase("JOIN") || node.getNodeType().equalsIgnoreCase("PROJECTION"))){
+					if(node.getNodeType().equalsIgnoreCase("selection")){
+						conditions += ((SelectionNode)node).getContent().substring(((SelectionNode)node).getContent().indexOf(':') + 2);
+						query += ((SelectionNode)node).getContent().substring(((SelectionNode)node).getContent().indexOf(':') + 2);
+						check.addCondList(((SelectionNode)node).getCondList());
+					}
+					if(node.getParentNode() != null && !(node.getParentNode().getNodeType().equalsIgnoreCase("join") || node.getParentNode().getNodeType().equalsIgnoreCase("projection"))){
+						query += space + and + space;
+						conditions += space + and + space;
+					}
+					node = node.getParentNode();
+				}
+				query += ";";
+				System.out.println(query);
+				
+				check.displayConditionList();
+				
+				stmt = connection[0].createStatement();
+				rs = stmt.executeQuery(
+						select + space + siteID + comma + attributeName + comma + startValue + comma + endValue + space +
+						from + space + horizontalFragmentTable + space +
+						where + space + tableName + space + equals + space + "\"" + leaves.get(i).getTableName() + "\"" + ";"
+						);
+				
+				ArrayList<Integer> sites = new ArrayList<Integer>();
+				while(rs.next()){
+					String id = rs.getString(siteID);
+					String attrName = rs.getString(attributeName);
+					int start = rs.getInt(startValue);
+					int end = rs.getInt(endValue);
+					System.out.println("ID : " + id + comma + space + 
+										attributeName + ": " + attrName + comma + space + 
+										startValue + ": " + start + comma + space +
+										endValue + ": " + end);
+					if(conditions.contains(attrName)){
+						
+					}
+					else{
+						
+					}
+				}
+				
+				
+			}
+		  	
 		  	
 		  	
 		  	/*------where clause----*/
