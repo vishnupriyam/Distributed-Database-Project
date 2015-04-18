@@ -1,19 +1,16 @@
-import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Connection;
-
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.mysql.jdbc.PreparedStatement;
-
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.statement.select.Select;
 import GlobalDefinition.JoinExpression;
 import Parser.WhereItemsFinder;
 import QueryTree.JoinNode;
@@ -21,14 +18,6 @@ import QueryTree.LeafNode;
 import QueryTree.QueryTree;
 import QueryTree.SelectionNode;
 import QueryTree.TreeNode;
-
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.parser.CCJSqlParserManager;
-import net.sf.jsqlparser.schema.Table;
-import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SelectBody;
-import net.sf.jsqlparser.statement.select.SelectVisitor;
-import net.sf.jsqlparser.util.SelectUtils;
 
 
 public class DBConnection {
