@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
@@ -61,21 +62,31 @@ public class DBConnection {
 	 * @throws JSQLParserException 
 	 */
 	public static void main(String[] args) throws JSQLParserException, SQLException {
-		// TODO Auto-generated method stub
 		Statement stmt,stmt1;
 		ResultSet resultSet,resultSet2;
 		Connection connection[] = new Connection[4];
 		System.out.println("********** CONNECTION LOG **********");
 		System.out.println();
+		
+		
+		//TODO Change the URL,DB name, Username and Password here
+		//Centralized Server
 		connection[0] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject","root","");
+		//Site 1
 		connection[1] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/","DDBProject1","root","");
+		//Site 2
 		connection[2] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject2", "root", "");
+		//Site 3
 		connection[3] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject3", "root", ""); 
+		
+		
 		System.out.println();
 		
 		
 		CCJSqlParserManager pm = new CCJSqlParserManager();
-		  String sql = "SELECT Book.title,Publisher.name,Customer.name,Orders.quantity FROM Publisher,Book,Customer,Orders WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10 AND Customer.customerId = Orders.Customer_customerId AND Orders.Book_bookId = Book.bookId";
+		  Scanner scanner = new Scanner(System.in);
+		  System.out.print("Enter the Query to execute : ");
+		  String sql =  scanner.nextLine();
 		  Select statement = (Select) pm.parse(new StringReader(sql));
 		  
 		  if (statement instanceof Select) {

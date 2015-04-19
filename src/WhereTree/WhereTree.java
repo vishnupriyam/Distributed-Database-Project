@@ -58,6 +58,7 @@ public class WhereTree {
 	}
 	
 	public void collectJoins(WhereNode node){
+		if(node == null) return;
 		if(node instanceof OpNode){
 			OpNode onode = (OpNode)node;
 			AttrNode leftAttr = null;
@@ -349,6 +350,7 @@ public class WhereTree {
 	}
 	
 	public WhereNode toCNF(WhereNode node){
+		if(node == null) return null;
 		if(node.IsLeaf()){
 			return node;
 		}
