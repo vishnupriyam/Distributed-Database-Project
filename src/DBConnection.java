@@ -72,28 +72,12 @@ public class DBConnection {
 		connection[2] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject2", "root", "");
 		connection[3] = DBConnection.connectDB("jdbc:mysql://127.0.0.1:3306/", "DDBProject3", "root", ""); 
 		System.out.println();
-		/*try {
-			stmt = conn1.createStatement();
-			rs = stmt.executeQuery("SELECT * FROM faculty_master");
-			while(rs.next()){
-				String id = rs.getString("Faculty_Id");
-				String name = rs.getString("Faculty_Name");
-				String nation = rs.getString("Faculty_Email");
-				System.out.println("ID : " + id + " name : " + name + " nation : " + nation);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		
 		
 		CCJSqlParserManager pm = new CCJSqlParserManager();
-		  String sql = "SELECT Book.title,Publisher.name,Customer.name,Orders.quantity FROM Publisher,Book,Customer,Orders WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10 AND Customer.customerId = Orders.Customer_customerId AND Orders.Book_bookId = Book.bookId AND Book.bookId = 12 AND Customer.rank >= 2";
+		  String sql = "SELECT Book.title,Publisher.name,Customer.name,Orders.quantity FROM Publisher,Book,Customer,Orders WHERE Publisher.publisherId = Book.Publisher_publisherId AND Publisher.publisherId = 10 AND Customer.customerId = Orders.Customer_customerId AND Orders.Book_bookId = Book.bookId";
 		  Select statement = (Select) pm.parse(new StringReader(sql));
-		  /* 
-		  now you should use a class that implements StatementVisitor to decide what to do
-		  based on the kind of the statement, that is SELECT or INSERT etc. but here we are only
-		  interested in SELECTS
-		  */
+		  
 		  if (statement instanceof Select) {
 		  	Select selectStatement = (Select) statement;
 		  	
@@ -211,9 +195,6 @@ public class DBConnection {
 					if(conditions.contains(attrName)){
 						flag = true;
 						if(check.isRange(resultSet.getString(attributeName), resultSet.getInt(startValue), resultSet.getInt(endValue))){
-								//System.out.println(rs.getString(siteID));
-								//stmt1 = connection[resultSet.getInt(siteID)].createStatement();
-								//resultSet2 = stmt1.executeQuery(query);
 								try (java.sql.PreparedStatement s1 = connection[resultSet.getInt(siteID)].prepareStatement(query);
 									     ResultSet rs = s1.executeQuery()) {
 									    ResultSetMetaData meta = rs.getMetaData();
@@ -242,15 +223,6 @@ public class DBConnection {
 									               + bindVariables
 									               + ")";
 									    
-									    /*
-									    PreparedStatement s2 = connection[0].prepareStatement(
-									        "INSERT INTO " + leaves.get(i).getTableName() + " ("
-									      + columns.stream().collect(Collectors.joining(", "))
-									      + ") VALUES ("
-									      + columns.stream().map(c -> "?").collect(Collectors.joining(", "))
-									      + ")");
-										*/
-									    
 									    java.sql.PreparedStatement s2 = connection[0].prepareStatement(query2);
 									    
 									    while (rs.next()) {
@@ -262,9 +234,6 @@ public class DBConnection {
 
 									    s2.executeBatch();
 									}
-						}
-						else{
-								//just ignore case - as no site contains required information
 						}
 					}
 				}
@@ -298,15 +267,6 @@ public class DBConnection {
 							               + ") VALUES ("
 							               + bindVariables
 							               + ")";
-							    
-							    /*
-							    PreparedStatement s2 = connection[0].prepareStatement(
-							        "INSERT INTO " + leaves.get(i).getTableName() + " ("
-							      + columns.stream().collect(Collectors.joining(", "))
-							      + ") VALUES ("
-							      + columns.stream().map(c -> "?").collect(Collectors.joining(", "))
-							      + ")");
-								*/
 							    
 							    java.sql.PreparedStatement s2 = connection[0].prepareStatement(query2);
 							    
